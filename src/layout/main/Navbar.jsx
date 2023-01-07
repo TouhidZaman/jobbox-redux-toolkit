@@ -9,7 +9,7 @@ import { logOut } from "features/auth/authSlice";
 const Navbar = () => {
   const { pathname } = useLocation();
   const {
-    user: { email },
+    user: { email, role },
   } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
@@ -38,20 +38,35 @@ const Navbar = () => {
         </li>
 
         {email ? (
-          <li>
-            <button
-              className="border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all "
-              onClick={handleSignOut}
-            >
-              Logout
-            </button>
-          </li>
+          <>
+            <li>
+              <button className="hover:text-primary" onClick={handleSignOut}>
+                Logout
+              </button>
+            </li>
+            {role ? (
+              <li>
+                <Link
+                  className="border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all "
+                  to="/dashboard"
+                >
+                  Dashboard
+                </Link>
+              </li>
+            ) : (
+              <li>
+                <Link
+                  className="border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all "
+                  to="/register"
+                >
+                  Get started
+                </Link>
+              </li>
+            )}
+          </>
         ) : (
           <li>
-            <Link
-              className="border border-black px-2 py-1 rounded-full hover:border-primary hover:text-white hover:bg-primary hover:px-4 transition-all "
-              to="/login"
-            >
+            <Link className="hover:text-primary" to="/login">
               Login
             </Link>
           </li>
