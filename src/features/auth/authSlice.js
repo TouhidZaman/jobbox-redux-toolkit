@@ -24,21 +24,27 @@ export const loginUser = createAsyncThunk("auth/loginUser", async ({email, passw
     return res?.user?.email;
 })
 
+export const getUser = createAsyncThunk("auth/getUser", async (email) => {
+    const res = await fetch(`${process.env.REACT_APP_bseURL}users/${email}`);
+    const data = await res.json();
+    if(data.status) {
+        return data.data;
+    } else {
+        return { email };
+    }
+})
+
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
         logOut: (state) => {
-            state.user.email="";
+            state.user={email:"", role: ""}
             state.isLoading=false;
         },
         resetError: (state) => {
             state.isError=false;
             state.error=""
-        },
-        setUser: (state, { payload }) => {
-            state.user.email=payload;
-            state.isLoading=false;
         }
     },
     extraReducers: (builder) => {
@@ -71,9 +77,23 @@ const authSlice = createSlice({
                 state.isError=true;
                 state.error=action.error.message;
             })
+            .addCase(getUser.pending, (state) => {
+                state.isLoading=true;
+                state.isError=false
+            })
+            .addCase(getUser.fulfilled, (state, {payload}) => {
+                state.isLoading=false;
+                state.isError=false;
+                state.user={...state.user, ...payload};
+            })
+            .addCase(getUser.rejected, (state, action) => {
+                state.isLoading=false;
+                state.isError=true;
+                state.error=action.error.message;
+            })
     }
 })
 
-export const { logOut, resetError, setUser } = authSlice.actions
+export const { logOut, resetError } = authSlice.actions
 
 export default authSlice.reducer;
