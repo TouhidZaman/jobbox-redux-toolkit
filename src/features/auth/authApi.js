@@ -1,4 +1,5 @@
 import apiSlice from 'features/api/apiSlice';
+import { getUser } from './authSlice';
 
 export const authApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -7,7 +8,14 @@ export const authApi = apiSlice.injectEndpoints({
                 method: "POST",
                 url: "users",
                 body: user
-            })
+            }),
+            async onQueryStarted(user, {dispatch, queryFulfilled}) {
+                try {
+                    await queryFulfilled
+                    dispatch(getUser(user.email)); //getting user data to reflect changes instantly  
+                  } catch {
+                  }
+            }
         })
     })
 })
